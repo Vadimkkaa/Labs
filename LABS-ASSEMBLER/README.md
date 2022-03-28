@@ -6,6 +6,6 @@ This repository represents my labs written on ASSEMBLY language during my educat
 
 Below you can find files I used to compile my code
 
-Environment: DosBox 0.74
+Environment: DOSBox 0.74
 
 Have a good day :)
