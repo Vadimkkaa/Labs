@@ -12,6 +12,6 @@ If you want to use a debugger, just write a 'td' word before the  .exe file
 
 This should make it
 
-Environment: DOSBox 0.74 ,TASM
+Environment: DOSBox 0.74, TASM
 
 Have a good day :)
