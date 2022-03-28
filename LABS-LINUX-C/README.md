@@ -8,6 +8,6 @@ So here comes the question- how do I do the task?
 
 The answer is me using Windows Subsystem for Linux (WSL) 
 
-Distributive: Ununtu
+Distributive: Ubuntu
 
 Have a good day :)
