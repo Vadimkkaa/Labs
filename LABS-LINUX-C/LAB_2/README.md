@@ -16,6 +16,7 @@ Possible keys-
 
 If no options entered- output is all types (-s is optional)
 
+
 P.S.  You can enter keys in any order, for instance-
 
 a)./dirwalk -df -l
