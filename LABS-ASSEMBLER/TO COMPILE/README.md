@@ -8,6 +8,8 @@ Using:
 
 tasm lab_name.asm -> tlink lab_name.obj -> lab_name.exe
 
+If you want to use a debugger, just write a 'td' word before the .exe file
+
 This should make it
 
 Environment: DOSBox 0.74 ,TASM
