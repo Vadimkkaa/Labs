@@ -1,4 +1,4 @@
-Hello
+Hello.
 
 This repository represents my labs written on ASSEMBLY language during my education at Belarusian State University of Informatics and Radioelectronics
 
