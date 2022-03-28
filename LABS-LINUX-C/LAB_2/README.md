@@ -12,7 +12,7 @@ Possible keys-
 
 -f -- only files (- type f)
 
--s -- sort
+-s -- sort.
 
 If no options entered- output is all types (-s is optional)
 
@@ -27,5 +27,7 @@ b)./dirwalk -ldf
 and etc.
 
 Both options will make the same output
+
+P.P.S  I recommend using this program in a directory with a lot of (files). By doing that you will get much more files/dir/links to look at and see how my program actually works
 
 Have a good day :)
