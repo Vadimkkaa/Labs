@@ -1,0 +1,21 @@
+Hi.
+
+To compile the file I am using (at the moment)
+
+gcc -o new_name_for_file dirwalk_final.c
+
+To run new_name_for_file (for example dirwalk) use: 
+
+./dirwalk
+
+If you want to use keys, do it according for this example
+
+./dirwalk -l -d
+
+or
+
+./dirwalk -ldf
+
+and etc
+
+Have a good day :)
