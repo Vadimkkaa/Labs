@@ -2,7 +2,7 @@ Hi.
 
 The task:
 
-Create a dirwalk program, which can scan file system and print info into stdout according to options (aka keys)
+Create a dirwalk program, which can scan file system and print info into stdout according to the options below (aka keys)
 
 Possible keys-
 
