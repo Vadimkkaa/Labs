@@ -8,7 +8,7 @@ Task:
 
 3) Output parent and child's PID
 
-Using make file -> just use key word 'make'
+Using make file -> just use the key word 'make'
 
 After that u will get compiled files
 
