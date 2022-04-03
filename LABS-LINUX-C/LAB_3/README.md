@@ -8,6 +8,10 @@ Task:
 
 3) Output parent and child's PID
 
-Using make file
+Using make file -> just use key word 'make'
+
+After that u will get compiled files
+
+Run './parent' to execute the program
 
 Have a good day :)
