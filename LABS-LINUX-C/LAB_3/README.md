@@ -8,4 +8,6 @@ Task:
 
 3) Output parent and child's PID
 
+Using make file
+
 Have a good day :)
