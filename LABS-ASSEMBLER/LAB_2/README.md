@@ -6,6 +6,6 @@ Task:
 
 2)Enter a word to delete from the string
 
-3)Show edited string
+3)Show an edited string
 
 Have a good day :)
