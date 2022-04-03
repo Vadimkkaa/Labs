@@ -4,7 +4,7 @@ This repository represents my labs written on ASSEMBLY language during my educat
 
 2 year, 4 semester
 
-In the folder "To_Compile" you can find files I used to compile my code
+In a folder "TO COMPILE" you can find the files I used to compile my code
 
 Environment: DOSBox 0.74, TASM
 
