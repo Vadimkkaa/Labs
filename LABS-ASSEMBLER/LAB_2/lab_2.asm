@@ -1,145 +1,209 @@
 .model small
 stack 100h
+
 .data
-    greeting db "Input a number ",'$'
-    double_dot db ": ",'$'
-    end_of_greeting db " numbers to enter left",0dh,0ah,'$'
-    end_ouput db "The number which repeats the most times is: ",0dh,0ah,'$'
+    buffer db 200 dup(?), '$'
 
-    massive dw 30 dup(0)
-    minus_flag db 0         ; '0' for positive number and   '1' for negative one
+    greeting db "Input a string pls", 0Dh,0Ah,'$'   
+    greeting_delete_a_word db "Hey,let's input a string to delete",0dh,0Ah,'$'
+    show_string db "Your string is: ",'$'
+    show_string_to_delete db "Your string to delete is: ",'$'
+    found_the_word db "Your symbol is: ",'$'
 
-    new_line db 0dh,0ah,'$'
+    delete_word db ?
 
+    no_words_like_that db "Sorry, you have not entered this-> word! :(",0dh,0ah,'$'
+    new_line db 0Dh,0Ah,'$'
+
+    word_size dw ?
 .code
-
-number_output proc near 
-    push cx
-    push dx
-
-    cmp minus_flag,1
-    je set_to_neg
-    jmp start
-
-set_to_neg:
-    neg ax
-  ;  mov ax,cx    I guess I don't need it 
-
 start:
-    test ax, ax   ;to check whether it is negative
-    jns oi1
-    
-    ;if it IS negative - I print '-' and take module of the number
-
-    mov cx, ax
-    mov ah, 02h
-    mov dl, '-'
-    int 21h
-    mov ax, cx
-    neg ax
-
-oi1:  
-    xor cx, cx
-    mov bx, 10 
-oi2:
-    xor dx,dx
-    div bx
-    push dx
-    inc cx  ;amount of 'letters' in the number saving to cx
-
-    test ax, ax
-    jnz  oi2
-
-    mov  ah, 02h
-oi3:
-    pop dx
-    add dl, '0'
-    int 21h
-loop oi3
-
-    pop dx
-    pop cx
-    ret
-number_output endp
-
-
-
-
-
-
-
-
-
-main:
-    .386
-    
-    mov ax,@data
+    mov ax,DGROUP
     mov ds,ax
-
-    mov cx,8
-    mov si,1
-
-
-
-input:
-    mov ah,9
     mov dx,offset greeting
-    int 21h
-
-    mov ax,si
-    call number_output
-
     mov ah,9
-    mov dx,offset double_dot
     int 21h
+    mov cx,200
+    xor si,si ; to make index equal 0
 
-    push cx
-
-    xor bx,bx
-
-number_enter:
-
-    xor al,al
+loop_for_enter:  
     mov ah,1
     int 21h
-
-    cmp al,'-'
-    jne continue
-    mov minus_flag,1
-
-continue:    
+    mov buffer[si],al
+    inc si
     cmp al,0dh  
-    je continue_
-    IMUL bx,10
+loopne loop_for_enter
 
-    sub al,'0'
+    cmp buffer[1],0
+    je jump_to_end
 
-    add bl,al
-    inc cx   ;just to let this cycle work
+    mov dx,offset new_line
+    mov ah,9
+    int 21h
 
-loopne number_enter
+    jmp before_word_to_delete
+output_string:
+    mov ah,2
+    mov dl,buffer[si]
+    int 21h
+    inc si
+    cmp buffer[si],0dh
+loopne output_string
 
-continue_:
-    mov ax,bx
+before_word_to_delete:
     
-    call number_output
-    ;;  INPUT INTO MASSIVE + ACCRODING TO MINUS_FLAG(just use neg to the register)
+    mov dx,offset greeting_delete_a_word
+    mov ah,9
+    int 21h
+
+    mov cx,200
+    xor si,si
+
+word_to_delete:
+    mov ah,1
+    int 21h
+    mov delete_word[si],al
+    inc si
+    cmp al,0dh
+
+loopne word_to_delete    
+
+
+    dec si
+    mov cx,si
+    mov si,0
+    jmp temp ;;;;;;;;;;;;  
+
+    mov dx,offset new_line
+    mov ah,9
+    int 21h
+
+    lea dx,show_string_to_delete
+    mov ah,9
+    int 21h
+
+output_delete:
+    mov ah,2
+    mov dl,delete_word[si]
+    int 21h
+    inc si
+    cmp delete_word[si],0dh
+loopne output_delete
+
+temp:
+
+    mov word_size,cx
+    mov cx,200
+    xor si,si
+
+    xor bx,bx 
+    xor dx,dx
+    jmp cycle_all
+
+jump_to_end:
+    jmp _end
+
+
+cycle_all:
+    cmp buffer[si],0dh
+    je no_match_next
+
+    mov  al,delete_word[bx]
+    cmp  buffer[si],al
+    je equal
+
+    xor bx,bx
+    inc si
+    xor dx,dx
+    xor ax,ax    
+    jmp cycle_all
+
+equal:
+    inc dx
+    inc bx
+    inc si
+    xor ax,ax    
+
+    cmp dx,word_size
+    je found
+
+    jmp cycle_all
+
+found:
+    cmp buffer[bx],' '
+    
+    sub si,word_size
+    mov bx,si               ;index of the start of the word to delete in the main string
+    jmp string_to_rewrite
+
+loopne cycle_all
+
+
+string_to_rewrite:
+
+    mov bx,si
+    mov cx,200
+    mov si,word_size
+
+    mov al,' '
+    cmp buffer[bx+si],al
+    je move_one_symbol
+    
+
+    mov buffer[bx],0dh
+    inc bx
+    mov buffer[bx],'$'
+    xor ax,ax
+    jmp output_
+
+no_match_next:
+    jmp no_match
+
+
+rewrite_string:
+
+    mov al,buffer[bx+si]
+    mov buffer[bx],al
+
+    cmp buffer[bx],0dh
+    je continue
+    inc bx
+   
+loopne rewrite_string
+
+
+continue:
+    inc bx
+    mov buffer[bx],'$'
+    xor dx,dx
+
+output_:
 
     mov ah,9
     mov dx,offset new_line
     int 21h
 
-    xor ax,ax
-    xor bx,bx
-    mov minus_flag,0
+    mov ah,9
+    mov dx,offset show_string
+    int 21h
 
-    pop cx
+    mov ah,9
+    mov dx,offset buffer
+    int 21h
+
+    jmp _end
+
+move_one_symbol:
     inc si
-loop input
+    xor ax,ax
+    jmp rewrite_string
 
+no_match:
+    mov ah,9
+    mov dx,offset no_words_like_that
+    int 21h
 
-
-end_:
+_end:
     mov ax,4C00h
     int 21h
-end main
+end start  
