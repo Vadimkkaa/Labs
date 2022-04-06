@@ -16,8 +16,16 @@ stack 100h
 number_output proc near 
     push cx
     push dx
+
+    cmp minus_flag,1
+    je set_to_neg
+    jmp start
+
+set_to_neg:
+    neg ax
   ;  mov ax,cx    I guess I don't need it 
 
+start:
     test ax, ax   ;to check whether it is negative
     jns oi1
     
@@ -113,6 +121,7 @@ loopne number_enter
 
 continue_:
     mov ax,bx
+    
     call number_output
     ;;  INPUT INTO MASSIVE + ACCRODING TO MINUS_FLAG(just use neg to the register)
 
@@ -129,29 +138,6 @@ continue_:
 loop input
 
 
-
-
-
-
-
-    jmp end_
-
-;input:
-
-    mov ax,cx
-    call number_output;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; i wanna output a number
-
-    mov dx,offset end_of_greeting
-    mov ah,9
-    int 21h
-
-    mov ah,9
-    mov dx,offset new_line
-    int 21h
-
-
-
-loop input
 
 end_:
     mov ax,4C00h
