@@ -106,6 +106,7 @@ number_enter:
     cmp al,'-'
     jne continue
     mov minus_flag,1
+    jmp number_enter
 
 continue:    
     cmp al,0dh  
