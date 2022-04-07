@@ -6,13 +6,13 @@ stack 100h
     array db "Your array is:",0dh,0ah,'$'
     space db " ","$"
     end_ouput db "The number which repeats the most times is: ",'$'
+    error_output db "Sorry,there are no equal numbers in the massive",0dh,0ah,'$'
 
     massive dw 30 dup(0)
     minus_flag db 0         ; '0' for positive number and   '1' for negative one
 
     new_line db 0dh,0ah,'$'
 
-    most_common dw ?
     counter_temp dw ?
     counter_max dw ?
 
@@ -86,23 +86,30 @@ main:
 
 
     lea di,massive
-
-    mov cx,5                        ;; 30 actually
+    xor dx,dx
+    mov cx,30                        ;; 30 actually
 
 
 input:
+
+    push dx
+
     mov ah,9
     mov dx,offset greeting
     int 21h
 
+    pop dx
     mov ax,dx
 
     call number_output
+
+    push dx
 
     mov ah,9
     mov dx,offset double_dot
     int 21h
 
+    pop dx
     push cx
 
     xor bx,bx
@@ -139,14 +146,10 @@ continue_:
     neg ax
 
 continue__:
-    ;;;
+
     mov [di],ax
 
-   ; call number_output
-   
-
-    ;;  INPUT INTO MASSIVE + ACCORDING TO MINUS_FLAG(just use neg to the register)
-
+    push dx
     mov ah,9
     mov dx,offset new_line
     int 21h
@@ -155,6 +158,8 @@ continue__:
     xor bx,bx
     mov minus_flag,0
 
+    pop dx
+    inc dx
     add di,2
     pop cx
 
@@ -166,7 +171,7 @@ loop input
     int 21h
 
 
-    mov cx,5                         ;;  I can say 30 
+    mov cx,30                         ;;  I can say 30 
     xor si,si
 
     lea si,massive
@@ -188,11 +193,8 @@ loop output_
     mov dx,offset new_line
     int 21h
 
-    mov ah,9
-    mov dx,offset end_ouput
-    int 21h
 
-    mov cx,25                        ;;;;; 900 I guess ??
+    mov cx,900                        ;;;;; 900 I guess ??
 
     xor di,di
 
@@ -205,23 +207,19 @@ loop output_
 
     mov ax,[si]
     mov bx,[di]
-    ;mov most_common,ax
-    ;mov most_common_temp,ax
-    ;mov dx,1
-   ; mov number,0
 
 
     mov number,ax         ;;for max to start with sth 
     mov counter_temp,0
     mov counter_max,0
 
-
-
+  
+;----------------------SEARCH FOR THE NUMBER THAT REPEATS THE MOST-----------------------
 
 search_all:
 
     push cx
-    mov cx,5                       ;;;;;;  CX
+    mov cx,30                       ;;;;;;  CX
 
     mov ax,[si]
 search_inside:
@@ -263,17 +261,30 @@ continue_2:
     mov counter_temp,0
 
     pop cx
-    sub cx,5                            ;;;;;;  CX
+    sub cx,30                            ;;;;;;  CX
     inc cx
 loop search_all
 
+;----------------------FILAL OTPUT-----------------------
 
+    cmp counter_max,1               ;I check whether every number is unique in the massive
+    je one_time_for_all
+
+    jmp ok
+one_time_for_all:
+    mov ah,9
+    mov dx,offset error_output
+    int 21h
+
+    jmp end_
+
+ok:
+    mov ah,9
+    mov dx,offset end_ouput
+    int 21h
 
     mov ax,number
     call number_output
-
-jmp end_
-
 
 end_:
     mov ax,4C00h
