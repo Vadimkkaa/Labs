@@ -5,12 +5,18 @@ stack 100h
     double_dot db ": ",'$'
     array db "Your array is:",0dh,0ah,'$'
     space db " ","$"
-    end_ouput db "The number which repeats the most times is: ",0dh,0ah,'$'
+    end_ouput db "The number which repeats the most times is: ",'$'
 
     massive dw 30 dup(0)
     minus_flag db 0         ; '0' for positive number and   '1' for negative one
 
     new_line db 0dh,0ah,'$'
+
+    most_common dw ?
+    counter_temp dw ?
+    counter_max dw ?
+
+    number dw ?
 
 .code
 
@@ -81,7 +87,7 @@ main:
 
     lea di,massive
 
-    mov cx,5
+    mov cx,5                        ;; 30 actually
 
 
 input:
@@ -91,7 +97,7 @@ input:
 
     mov ax,dx
 
-  ;  call number_output
+    call number_output
 
     mov ah,9
     mov dx,offset double_dot
@@ -160,7 +166,7 @@ loop input
     int 21h
 
 
-    mov cx,5  ;;  I can say 30 
+    mov cx,5                         ;;  I can say 30 
     xor si,si
 
     lea si,massive
@@ -181,6 +187,93 @@ loop output_
     mov ah,9
     mov dx,offset new_line
     int 21h
+
+    mov ah,9
+    mov dx,offset end_ouput
+    int 21h
+
+    mov cx,25                        ;;;;; 900 I guess ??
+
+    xor di,di
+
+    xor ax,ax
+    xor bx,bx
+    xor dx,dx
+
+    lea si,massive
+    lea di,massive
+
+    mov ax,[si]
+    mov bx,[di]
+    ;mov most_common,ax
+    ;mov most_common_temp,ax
+    ;mov dx,1
+   ; mov number,0
+
+
+    mov number,ax         ;;for max to start with sth 
+    mov counter_temp,0
+    mov counter_max,0
+
+
+
+
+search_all:
+
+    push cx
+    mov cx,5                       ;;;;;;  CX
+
+    mov ax,[si]
+search_inside:
+
+    mov bx,[di]
+    cmp ax,bx
+    je equal
+
+    jmp continue_1
+
+equal:
+    inc counter_temp
+
+continue_1:
+
+    add di,2
+
+
+loop search_inside
+
+    mov bx,counter_max
+    cmp counter_temp,bx
+    ja found_more_often
+
+    jmp continue_2
+found_more_often:
+
+    mov bx,counter_temp
+    mov counter_max,bx
+    mov ax,[si]
+    mov number,ax
+
+continue_2:
+
+
+    lea di,massive
+    add si,2
+
+    mov counter_temp,0
+
+    pop cx
+    sub cx,5                            ;;;;;;  CX
+    inc cx
+loop search_all
+
+
+
+    mov ax,number
+    call number_output
+
+jmp end_
+
 
 end_:
     mov ax,4C00h
