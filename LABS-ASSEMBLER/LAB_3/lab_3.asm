@@ -6,7 +6,8 @@ stack 100h
     array db "Your array is:",0dh,0ah,'$'
     space db " ","$"
     end_ouput db "The number which repeats the most times is: ",'$'
-    error_output db "Sorry,there are no equal numbers in the massive",0dh,0ah,'$'
+    error_output db "Sorry this number is too big to enter. Please enter a new one: ","$"
+    error_output_number db "Sorry,there are no equal numbers in the massive",0dh,0ah,'$'
 
     massive dw 30 dup(0)
     minus_flag db 0         ; '0' for positive number and   '1' for negative one
@@ -73,6 +74,31 @@ number_output endp
 
 
 
+new_line_output proc near
+
+    mov ah,9
+    mov dx,offset new_line
+    int 21h
+
+    ret
+new_line_output endp
+
+
+
+error_overflow proc near
+
+    push dx
+
+    call new_line_output
+
+    mov ah,9
+    mov dx,offset error_output
+    int 21h
+
+    pop dx
+
+    ret
+error_overflow endp
 
 
 
@@ -86,10 +112,11 @@ main:
 
 
     lea di,massive
-    xor dx,dx
+    mov dx,1
     mov cx,30                        ;; 30 actually
 
 
+;--------------------------------------INPUT-----------------------------------------;
 input:
 
     push dx
@@ -111,6 +138,13 @@ input:
 
     pop dx
     push cx
+    xor bx,bx
+
+    jmp number_to_enter
+
+overflow:           ;in case overflow occured
+
+    call error_overflow
 
     xor bx,bx
 
@@ -129,10 +163,13 @@ continue:
     cmp al,0dh  
     je continue_
     IMUL bx,10
+    jo overflow     ;if overflow took a place
 
     sub al,'0'
 
     add bl,al
+    jo overflow
+    
     inc cx   ;just to let this cycle work
 
 loopne number_to_enter
@@ -150,9 +187,7 @@ continue__:
     mov [di],ax
 
     push dx
-    mov ah,9
-    mov dx,offset new_line
-    int 21h
+    call new_line_output
 
     xor ax,ax
     xor bx,bx
@@ -189,9 +224,7 @@ output_:
 
 loop output_
 
-    mov ah,9
-    mov dx,offset new_line
-    int 21h
+    call new_line_output
 
 
     mov cx,900                        ;;;;; 900 I guess ??
@@ -214,7 +247,7 @@ loop output_
     mov counter_max,0
 
   
-;----------------------SEARCH FOR THE NUMBER THAT REPEATS THE MOST-----------------------
+;----------------------SEARCH FOR THE NUMBER THAT REPEATS THE MOST-----------------------;
 
 search_all:
 
@@ -265,7 +298,7 @@ continue_2:
     inc cx
 loop search_all
 
-;----------------------FILAL OTPUT-----------------------
+;--------------------------------------FILAL OTPUT-----------------------------------------;
 
     cmp counter_max,1               ;I check whether every number is unique in the massive
     je one_time_for_all
@@ -273,7 +306,7 @@ loop search_all
     jmp ok
 one_time_for_all:
     mov ah,9
-    mov dx,offset error_output
+    mov dx,offset error_output_number
     int 21h
 
     jmp end_
