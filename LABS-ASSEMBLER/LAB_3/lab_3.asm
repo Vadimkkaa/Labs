@@ -18,6 +18,7 @@ stack 100h
     counter_max dw ?
 
     number dw ?
+    special_number dw 32767
 
 .code
 
@@ -113,8 +114,19 @@ main:
 
     lea di,massive
     mov dx,1
-    mov cx,30                        ;; 30 actually
+    mov cx,15                        ;; 30 actually
 
+    jmp input
+
+
+
+overflow_special:
+    
+
+    cmp bx,1111111111111111b
+    jg cool_not_minus
+
+    jmp cool_minus
 
 ;--------------------------------------INPUT-----------------------------------------;
 input:
@@ -144,6 +156,17 @@ input:
 
 overflow:           ;in case overflow occured
 
+    cmp minus_flag,1
+    jne cool_not_minus
+
+    jmp overflow_special
+cool_minus:
+
+    jmp number_to_enter
+
+
+cool_not_minus:
+
     call error_overflow
 
     xor bx,bx
@@ -162,17 +185,21 @@ number_to_enter:
 continue:    
     cmp al,0dh  
     je continue_
+
     IMUL bx,10
-    jo overflow     ;if overflow took a place
+    jc overflow
+
 
     sub al,'0'
 
     add bl,al
-    jo overflow
-    
+    jc overflow
+  
     inc cx   ;just to let this cycle work
 
 loopne number_to_enter
+
+    jmp continue_
 
 continue_:
     mov ax,bx
@@ -206,7 +233,7 @@ loop input
     int 21h
 
 
-    mov cx,30                         ;;  I can say 30 
+    mov cx,15                         ;;  I can say 30 
     xor si,si
 
     lea si,massive
@@ -227,7 +254,7 @@ loop output_
     call new_line_output
 
 
-    mov cx,900                        ;;;;; 900 I guess ??
+    mov cx,225                        ;;;;; 900 I guess ??
 
     xor di,di
 
@@ -252,7 +279,7 @@ loop output_
 search_all:
 
     push cx
-    mov cx,30                       ;;;;;;  CX
+    mov cx,15                       ;;;;;;  CX
 
     mov ax,[si]
 search_inside:
@@ -294,7 +321,7 @@ continue_2:
     mov counter_temp,0
 
     pop cx
-    sub cx,30                            ;;;;;;  CX
+    sub cx,15                            ;;;;;;  CX
     inc cx
 loop search_all
 
