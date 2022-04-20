@@ -6,7 +6,7 @@ One thing: At the moment of creating this file I have not currently installed Li
 
 So here comes the question - how do I do the task?
 
-The answer is me using Windows Subsystem for Linux (WSL) 
+The answer is me using Windows Subsystem for Linux (WSL2) 
 
 Distributive: Ubuntu
 
