@@ -4,21 +4,27 @@ stack 100h
 
 .data
  graph0  db 0Dh,0Ah,'$'
- graph1  db "+++++++++++++++++++++++++",0Dh,0Ah,'$'
- graph2  db "++         +++       T ++",0Dh,0Ah,'$'
- graph3  db "++    ++   B    ++     ++",0Dh,0Ah,'$'
- graph4  db "++  T    ++++++    ++  ++",0Dh,0Ah,'$'
- graph5  db "++                     ++",0Dh,0Ah,'$'
- graph6  db "++  +++       ++++     ++",0Dh,0Ah,'$'
- graph7  db "++      ++++     T   ++++",0Dh,0Ah,'$'
- graph8  db "++  T                  ++",0Dh,0Ah,'$'
- graph9  db "++++      ++++++       ++",0Dh,0Ah,'$'
- graph10 db "++                  +++++",0Dh,0Ah,'$'
- graph11 db "++                     ++",0Dh,0Ah,'$'
- graph22 db "++           P         ++",0Dh,0Ah,'$'
-
+ graph1  db "1111111111111111111111111",0Dh,0Ah,'$'
+ graph2  db "11         111       T 11",0Dh,0Ah,'$'
+ graph3  db "11    11   B    11     11",0Dh,0Ah,'$'
+ graph4  db "11       111111    11  11",0Dh,0Ah,'$'
+ graph5  db "11                     11",0Dh,0Ah,'$'
+ graph6  db "11  111       1111     11",0Dh,0Ah,'$'
+ graph7  db "11      1111         1111",0Dh,0Ah,'$'
+ graph8  db "11                     11",0Dh,0Ah,'$'
+ graph9  db "1111      111111       11",0Dh,0Ah,'$'
+ graph10 db "11                  11111",0Dh,0Ah,'$'
+ graph11 db "11                     11",0Dh,0Ah,'$'
+ graph22 db "11           P         11",0Dh,0Ah,'$'
+             ;<<>d3Od0>�><ddOM-���1
  pdirx db 0 
  pdiry db 1
+
+ direction db 1
+ bulletdirx db 0
+ bulletdiry db 1
+ bulletposx db 0
+ bulletposy db 0
 
  gdir1x db 0
  gdir1y db 0
@@ -27,10 +33,16 @@ stack 100h
  mainposy   db 21
 
  ghost1posx db 4
- ghost2posx db 4
-    
  ghost1posy db 21
- ghost2posy db 22
+
+ ghost2posx db 6
+ ghost2posy db 6
+
+ ghost3posx db 7
+ ghost3posy db 18
+
+ ghost4posx db 7
+ ghost4posy db 8
 
 .code
 
@@ -46,6 +58,9 @@ print_line proc
 print_line endp
 
 Ghost1cmp proc   
+  ; mov ch,[mainposy]
+   ;mov cl,[mainposx]
+
    mov ch,[mainposy]
    mov cl,[mainposx]
    ox1:
@@ -60,7 +75,7 @@ Ghost1cmp proc
    inc dh
    cmp al,'P'
    je endgam
-   cmp al,'+'
+   cmp al,'1'
    je oy1
    dec dh
    ret
@@ -73,7 +88,7 @@ Ghost1cmp proc
    dec dh
    cmp al,'P'
    je endgam
-   cmp al,'+'  
+   cmp al,'1'  
    je oy1
    inc dh
    ret
@@ -88,7 +103,7 @@ Ghost1cmp proc
    inc dl
    cmp al,'P'
    je endgam
-   cmp al,'+'  
+   cmp al,'1'  
    je skip5
    dec dl
    ret
@@ -101,7 +116,7 @@ Ghost1cmp proc
    dec dl
    cmp al,'P'
    je endgam
-   cmp al,'+'   
+   cmp al,'1'   
    je skip5
    inc dl
    ret
@@ -112,13 +127,18 @@ Ghost1cmp proc
 Ghost1cmp endp
 Ghost1mov proc
    mov cx,1
+
+   ;mov dh, ghost1posy
+   ;mov dl, ghost1posx
+
    mov dh,[ghost1posx]
    mov dl,[ghost1posy]
+
    mov ah,2
    int 10h 
-   ;mov ah,9
-   ;mov al,'�'
-   ;int 10h
+   mov ah,9
+   mov al,' '
+   int 10h
    call Ghost1cmp
    mov ah,2
    int 10h
@@ -126,30 +146,104 @@ Ghost1mov proc
    mov ah,9
    mov al,'T'
    int 10h
+
+   ;mov ghost1posy,dh
+   ;mov ghost1posx,dl
+
    mov [ghost1posx],dh
    mov [ghost1posy],dl
+
    ret
 Ghost1mov endp
 Ghost2mov proc
    mov cx,1
+
+   ;mov dh, ghost2posy
+   ;mov dl, ghost2posx
+
    mov dh,[ghost2posx]
    mov dl,[ghost2posy]
+
    mov ah,2
    int 10h 
-   ;mov ah,9
-   ;mov al,'�'
-   ;int 10h
+   mov ah,9
+   mov al,' '
+   int 10h
    call Ghost1cmp
    mov ah,2
    int 10h
    mov cx,1
    mov ah,9
-   mov al,'G'
+   mov al,'T'
    int 10h
+
+   ;mov ghost2posy,dh
+   ;mov ghost2posx,dl
+
    mov [ghost2posx],dh
    mov [ghost2posy],dl
    ret
 Ghost2mov endp
+
+Ghost3mov proc
+   mov cx,1
+
+   ;mov dh, ghost2posy
+   ;mov dl, ghost2posx
+
+   mov dh,[ghost3posx]
+   mov dl,[ghost3posy]
+
+   mov ah,2
+   int 10h 
+   mov ah,9
+   mov al,' '
+   int 10h
+   call Ghost1cmp
+   mov ah,2
+   int 10h
+   mov cx,1
+   mov ah,9
+   mov al,'T'
+   int 10h
+
+   ;mov ghost2posy,dh
+   ;mov ghost2posx,dl
+
+   mov [ghost3posx],dh
+   mov [ghost3posy],dl
+   ret
+Ghost3mov endp
+
+Ghost4mov proc
+   mov cx,1
+
+   ;mov dh, ghost2posy
+   ;mov dl, ghost2posx
+
+   mov dh,[ghost4posx]
+   mov dl,[ghost4posy]
+
+   mov ah,2
+   int 10h 
+   mov ah,9
+   mov al,' '
+   int 10h
+   call Ghost1cmp
+   mov ah,2
+   int 10h
+   mov cx,1
+   mov ah,9
+   mov al,'T'
+   int 10h
+
+   ;mov ghost2posy,dh
+   ;mov ghost2posx,dl
+
+   mov [ghost4posx],dh
+   mov [ghost4posy],dl
+   ret
+Ghost4mov endp
 
 respawn proc
     lea si,ghost1posx
@@ -192,7 +286,7 @@ Pmov proc
    int 10h
    mov ah,8
    int 10h
-   cmp al,'+'
+   cmp al,'1'
    jne can 
    cant:
    sub dh,pdiry
@@ -270,6 +364,7 @@ ReadInput proc
     lea si,pdiry
     mov al,-1
     mov [si],al
+    mov direction, 1    ;; for shooting
     jmp notpressed
     arrowdown:
     cmp al,'s'
@@ -280,6 +375,7 @@ ReadInput proc
     lea si,pdiry
     mov al,1
     mov [si],al
+    mov direction, 3    ;; for shooting
     jmp notpressed
     arrowright:
     cmp al,'d'
@@ -290,24 +386,168 @@ ReadInput proc
     lea si,pdiry
     mov al,0
     mov [si],al
+    mov direction, 4    ;; for shooting
     jmp notpressed
     arrowleft:
     cmp al,'a'
+    jne shoot
     lea si,pdirx
     mov al,-1
     mov [si],al
     lea si,pdiry
     mov al,0
     mov [si],al   
+    mov direction, 2    ;; for shooting
+    jmp notpressed
+
+shoot:
+    cmp al,' '
+    jne notpressed
+    push ax
+    call shooting
+    pop ax
+
     notpressed:
     call clear
     ret
 ReadInput endp  
+
+
+
+
+shooting proc
+    push cx
+    mov cx,1
+
+    mov al,mainposx
+    mov bulletposx,al
+    mov al,mainposy
+    mov bulletposy,al
+
+    cmp direction,1
+    ja next
+    lea si,bulletdirx
+    mov al,0
+    mov [si],al
+    lea si,bulletdiry
+    mov al,-1
+    mov [si],al
+    jmp real_bullet_shooting
+
+next:
+
+    cmp direction,2
+    ja next_1
+    lea si,bulletdirx
+    mov al,-1
+    mov [si],al
+    lea si,bulletdiry
+    mov al,0
+    mov [si],al
+    jmp real_bullet_shooting
+
+next_1:
+
+    cmp direction,3
+    ja next_2
+    lea si,bulletdirx
+    mov al,0
+    mov [si],al
+    lea si,bulletdiry
+    mov al,1
+    mov [si],al
+    jmp real_bullet_shooting
+
+next_2:
+    cmp direction,4
+    jne end_
+    lea si,bulletdirx
+    mov al,1
+    mov [si],al
+    lea si,bulletdiry
+    mov al,0
+    mov [si],al
+    jmp real_bullet_shooting
+
+
+
+
+real_bullet_shooting:  
+
+   mov dh,[bulletposy]
+   mov dl,[bulletposx]
+   mov ah,2
+   int 10h 
+   mov ah,9
+   mov al,20h
+   int 10h
+   add dh,bulletdiry
+   add dl,bulletdirx
+   mov ah,2
+   int 10h
+   mov ah,8
+   int 10h
+   cmp al,'1'
+   jne can_ 
+cant_:
+   sub dh,bulletdiry
+   sub dl,bulletdirx
+   mov dh,[bulletposy]
+   mov dl,[bulletposx]
+   mov ah,2
+   int 10h
+   mov cx,1
+   mov ah,9
+   mov al,'P'
+   int 10h
+   mov cx,0
+
+can_:
+   mov [bulletposy],dh
+   mov [bulletposx],dl
+   inc cx
+   ;cmp al,'�'
+   ;jne skip1
+   ;call scorep
+skip1_:
+   cmp al,'T'
+   jne skip2_
+   mov ah,9
+   mov al,' '
+   int 10h 
+
+skip2_:  
+   mov ah,9
+   mov al,'.'
+   int 10h 
+
+   ;push dx
+   ;dec dx
+   ;mov ah,2
+   ;int 10h
+   ;mov al,' '
+   ;mov ah,9
+   ;int 10h
+   ;pop dx
+
+
+loop real_bullet_shooting
+
+end_:
+
+    pop cx
+    ret
+shooting endp
+
+
+
+
+
 main:
     mov ax,@data
     mov ds,ax
     mov es, ax
-    add sp,2
+    sub sp,2
     mov bp,sp
 
     ;mov dh,0
@@ -362,19 +602,32 @@ main:
 phase2:    
     call Pmov
 
-    mov cx,0
-    mov dx,50000
-    mov ah,86h
-    int 15h
-    call Ghost1mov
+    ;mov cx,0
+    ;mov dx,50000
+    ;mov ah,86h
+    ;int 15h 
+
+    call Pmov
 
     mov cx,0
     mov dx,50000
     mov ah,86h
     int 15h
-    ;call Ghost2mov
 
-    call respawn
+    ;call Ghost1mov
+
+    mov cx,0
+    mov dx,50000
+    mov ah,86h
+    int 15h
+    ;call Ghost4mov
+
+    mov cx,0
+    mov dx,50000
+    mov ah,86h
+    int 15h
+    call Ghost3mov
+    ;call respawn
     
     jmp phase2
 end:
