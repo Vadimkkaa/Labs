@@ -1,5 +1,5 @@
 .model small
-
+.586
 stack 100h
 
 .data
@@ -17,6 +17,12 @@ stack 100h
  graph11 db "11                     11",0Dh,0Ah,'$'
  graph22 db "11           P         11",0Dh,0Ah,'$'
              ;<<>d3Od0>�><ddOM-���1
+ message_ db "Not 4",0dh,0ah,'$'  
+ message_hit db "Hit!!",0dh,0ah,'$'
+ win_or_not db 0
+ winner db "Gongratulations!",0dh,0ah,'$'
+ enemies_amount db 3
+
  pdirx db 0 
  pdiry db 1
 
@@ -303,9 +309,10 @@ Pmov proc
    can:
    mov [mainposy],dh
    mov [mainposx],dl
-   ;cmp al,'�'
-   ;jne skip1
-   ;call scorep
+   cmp al,'B'
+   jne skip1
+   mov win_or_not,1
+   call endgame
    skip1:
    cmp al,'T'
    jne skip2
@@ -329,18 +336,18 @@ clear proc
     ret
 clear endp
 endgame proc
-    ;xor al,al
-    ;lea bp,endmsg
-    ;mov dl,4
-    ;mov dh,23
-    ;mov ah,13h
-    ;mov cx,16
-    ;int 10h
-    ;mov ah,2
-    ;int 21h
     mov ah,00
     mov al,03h
     int 10h
+
+    cmp win_or_not,1
+    jne final
+
+    mov ah,9
+    mov dx,offset winner
+    int 21h
+final:
+
     mov ax, 4c00h 
     int 21h
     ret 
@@ -349,13 +356,19 @@ ReadInput proc
     mov cx,0
     mov dx,50000
     mov ah,86h
+
+                    ;;;;;TEMP
+   ; mov al,' '                
+    ;jmp shoot;;;;               
+    
+     
     int 15h    
     mov ah,1
     int 16h
     jz notpressed
     xor ah,ah
     int 16h
-    arrowup:
+arrowup:
     cmp al,'w'
     jne arrowdown
     lea si,pdirx
@@ -366,7 +379,7 @@ ReadInput proc
     mov [si],al
     mov direction, 1    ;; for shooting
     jmp notpressed
-    arrowdown:
+arrowdown:
     cmp al,'s'
     jne arrowright
     lea si,pdirx
@@ -377,7 +390,7 @@ ReadInput proc
     mov [si],al
     mov direction, 3    ;; for shooting
     jmp notpressed
-    arrowright:
+arrowright:
     cmp al,'d'
     jne arrowleft
     lea si,pdirx
@@ -388,7 +401,7 @@ ReadInput proc
     mov [si],al
     mov direction, 4    ;; for shooting
     jmp notpressed
-    arrowleft:
+arrowleft:
     cmp al,'a'
     jne shoot
     lea si,pdirx
@@ -460,7 +473,7 @@ next_1:
 
 next_2:
     cmp direction,4
-    jne end_
+    jne temp
     lea si,bulletdirx
     mov al,1
     mov [si],al
@@ -469,7 +482,8 @@ next_2:
     mov [si],al
     jmp real_bullet_shooting
 
-
+temp:
+jmp end_
 
 
 real_bullet_shooting:  
@@ -483,6 +497,10 @@ real_bullet_shooting:
    int 10h
    add dh,bulletdiry
    add dl,bulletdirx
+
+   cmp dl,20
+   jae cant_
+
    mov ah,2
    int 10h
    mov ah,8
@@ -501,6 +519,7 @@ cant_:
    mov al,'P'
    int 10h
    mov cx,0
+   ;jmp loop_end
 
 can_:
    mov [bulletposy],dh
@@ -512,6 +531,36 @@ can_:
 skip1_:
    cmp al,'T'
    jne skip2_
+
+
+   jmp go_next
+
+go_up:
+    jmp real_bullet_shooting
+
+go_next:
+
+   mov ah,2
+   mov dx,0
+   int 10h
+
+   mov ah,9
+    mov dx,offset message_hit
+    int 21h
+
+    dec enemies_amount
+   ;sub dh,bulletdiry
+   ;sub dl,bulletdirx
+
+   mov dh,[bulletposy]
+   mov dl,[bulletposx]
+   mov ah,2
+   int 10h
+   mov cx,1
+   mov ah,9
+   mov al,'P'
+   int 10h
+
    mov ah,9
    mov al,' '
    int 10h 
@@ -521,20 +570,26 @@ skip2_:
    mov al,'.'
    int 10h 
 
-   ;push dx
    ;dec dx
    ;mov ah,2
    ;int 10h
    ;mov al,' '
    ;mov ah,9
    ;int 10h
-   ;pop dx
+loop go_up
 
-
-loop real_bullet_shooting
-
+;;
+    pop cx
+    ret
 end_:
 
+    mov ah,2
+    mov dx,0
+    int 10h
+
+    mov ah,9
+    mov dx,offset message_
+    int 21h
     pop cx
     ret
 shooting endp
@@ -609,25 +664,40 @@ phase2:
 
     call Pmov
 
-    mov cx,0
-    mov dx,50000
-    mov ah,86h
-    int 15h
-
-    ;call Ghost1mov
-
-    mov cx,0
-    mov dx,50000
-    mov ah,86h
-    int 15h
-    ;call Ghost4mov
+    cmp enemies_amount,0
+    jne go_further
+    mov win_or_not,1
+    jmp endgame
+go_further:
 
     mov cx,0
     mov dx,50000
     mov ah,86h
     int 15h
+
+    cmp enemies_amount,1
+    jb phase2
+    call Ghost1mov
+
+    mov cx,0
+    mov dx,50000
+    mov ah,86h
+    int 15h
+
+    cmp enemies_amount,2
+    jb phase2
+    call Ghost4mov
+
+    mov cx,0
+    mov dx,50000
+    mov ah,86h
+    int 15h
+
+    cmp enemies_amount,3
+    jb phase2
     call Ghost3mov
     ;call respawn
+    
     
     jmp phase2
 end:
