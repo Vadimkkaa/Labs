@@ -6,9 +6,13 @@ To compile an .asm file you need to create a folder where you put all the files 
 
 Using:
 
-tasm lab_name.asm -> tlink lab_name.obj -> lab_name.exe
+tasm lab_name.asm -> tlink lab_name.obj -> lab_name.exe 
 
-If you want to use a debugger, just write a 'td' word before the   .exe file
+P.S. this example is represented for making .exe files, if you need a .com file follow this order:
+
+tasm lab_name.asm -> tlink /t lab_name.obj -> lab_name.com
+
+If you want to use a debugger, just write a 'td' word before the  lab_name.exe file
 
 This should make it
 
