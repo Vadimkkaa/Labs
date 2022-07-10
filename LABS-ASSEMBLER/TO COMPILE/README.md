@@ -2,7 +2,7 @@ Hi
 
 These files were used by me to compile my code on ASSEMBLY language
 
-To compile a .asm file you need to create a folder where you put all the files I uploaded
+To compile an .asm file you need to create a folder where you put all the files I uploaded
 
 Using:
 
