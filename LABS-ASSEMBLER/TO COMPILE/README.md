@@ -6,9 +6,11 @@ To compile an .asm file you need to create a folder where you put all the files 
 
 Using:
 
+P.S In my labs I get an .exe file, if you need a .com file look below but keep in mind that my labs won't work without some refactoring) 
+
 tasm lab_name.asm -> tlink lab_name.obj -> lab_name.exe 
 
-P.S. this example is represented for making .exe files, if you need a .com file follow this order:
+P.P.S. this example is represented for making .exe files, if you need a .com file follow this order:
 
 tasm lab_name.asm -> tlink /t lab_name.obj -> lab_name.com
 
